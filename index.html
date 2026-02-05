@@ -27,8 +27,10 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Minor helper for image placeholders */
+      /* Minor helper for image placeholders and sidebar */
       .img-placeholder{background:linear-gradient(135deg,#ffd98a 0%, #ffb36b 100%);} 
+      #cart-sidebar{width:360px;max-width:100%;}
+      .sidebar-hidden{transform:translateX(110%);} 
     </style>
   </head>
   <body class="bg-gray-100 text-black antialiased">
@@ -44,8 +46,15 @@
             <a href="#menu" class="text-sm font-medium px-3 py-2 rounded-md bg-gradient-to-r from-btorange to-btyellow text-white">Menu</a>
             <a href="#about" class="text-sm font-medium hover:text-btorange">About</a>
             <a href="#contact" class="text-sm font-medium hover:text-btorange">Contact</a>
+            <button id="open-cart" class="relative ml-2 px-3 py-2 rounded-md bg-white border border-gray-200 hover:shadow">
+              <span class="text-btorange font-semibold">Cart</span>
+              <span id="cart-count" class="absolute -top-2 -right-2 bg-btorange text-white text-xs w-6 h-6 rounded-full flex items-center justify-center">0</span>
+            </button>
           </nav>
-          <div class="md:hidden">
+          <div class="md:hidden flex items-center gap-2">
+            <button id="open-cart-mobile" class="p-2 rounded-md bg-white border border-gray-200 text-btorange">
+              🛒<span id="cart-count-mobile" class="ml-1 text-sm">0</span>
+            </button>
             <button id="mobile-menu-button" aria-label="Open menu" class="p-2 rounded-md bg-btorange text-white">
               ☰
             </button>
@@ -59,6 +68,32 @@
         <a href="#contact" class="block py-2 px-3 rounded-md hover:bg-gray-200">Contact</a>
       </div>
     </header>
+
+    <!-- Cart Sidebar -->
+    <aside id="cart-sidebar" class="fixed right-0 top-0 h-full bg-white shadow-lg p-6 transform transition-transform duration-300 sidebar-hidden z-50">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold">Your Cart</h3>
+        <button id="close-cart" class="text-gray-500">✕</button>
+      </div>
+      <div class="mt-4 space-y-4" id="cart-items">
+        <!-- items inserted here -->
+      </div>
+      <div class="mt-6 border-t pt-4 space-y-3">
+        <div class="flex justify-between text-sm text-gray-600"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+        <div class="flex justify-between text-sm text-gray-600"><span>Tax (8%)</span><span id="cart-tax">$0.00</span></div>
+        <div class="flex justify-between text-sm text-gray-600"><span>Discount</span><span id="cart-discount">$0.00</span></div>
+        <div class="flex justify-between text-lg font-semibold"><span>Total</span><span id="cart-total">$0.00</span></div>
+      </div>
+      <div class="mt-4">
+        <div class="text-sm text-gray-600">Loyalty Points: <span id="points-balance">0</span></div>
+        <div class="mt-2 text-sm text-gray-600">Redeem $5 for 100 points</div>
+        <label class="inline-flex items-center mt-2"><input type="checkbox" id="apply-points" class="mr-2">Redeem available rewards</label>
+      </div>
+      <div class="mt-6">
+        <button id="checkout-btn" class="w-full px-4 py-3 rounded-md bg-gradient-to-r from-btorange to-btyellow text-white font-semibold">Checkout</button>
+        <button id="demo-purchase" class="w-full mt-2 px-4 py-2 rounded-md border text-gray-700">Complete Demo Purchase</button>
+      </div>
+    </aside>
 
     <!-- Hero -->
     <main>
@@ -102,7 +137,7 @@
               <p class="text-sm text-gray-600 mt-1">Stir-fried rice noodles with tamarind sauce, shrimp, and tofu.</p>
               <div class="mt-4 flex items-center justify-between">
                 <div class="text-lg font-bold">$12</div>
-                <button class="px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow">Add</button>
+                <button class="add-to-cart px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow" data-id="pad-thai" data-name="Pad Thai" data-price="12">Add</button>
               </div>
             </div>
           </article>
@@ -114,7 +149,7 @@
               <p class="text-sm text-gray-600 mt-1">Creamy green curry with eggplant and basil.</p>
               <div class="mt-4 flex items-center justify-between">
                 <div class="text-lg font-bold">$14</div>
-                <button class="px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow">Add</button>
+                <button class="add-to-cart px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow" data-id="green-curry" data-name="Green Curry" data-price="14">Add</button>
               </div>
             </div>
           </article>
@@ -126,7 +161,7 @@
               <p class="text-sm text-gray-600 mt-1">Sweet coconut sticky rice with ripe mango.</p>
               <div class="mt-4 flex items-center justify-between">
                 <div class="text-lg font-bold">$7</div>
-                <button class="px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow">Add</button>
+                <button class="add-to-cart px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow" data-id="mango-sticky" data-name="Mango Sticky Rice" data-price="7">Add</button>
               </div>
             </div>
           </article>
@@ -139,7 +174,7 @@
               <p class="text-sm text-gray-600 mt-1">Spicy and sour soup with shrimp and lemongrass.</p>
               <div class="mt-4 flex items-center justify-between">
                 <div class="text-lg font-bold">$9</div>
-                <button class="px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow">Add</button>
+                <button class="add-to-cart px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow" data-id="tom-yum" data-name="Tom Yum Soup" data-price="9">Add</button>
               </div>
             </div>
           </article>
@@ -151,7 +186,7 @@
               <p class="text-sm text-gray-600 mt-1">Stir-fried chicken with chilies and holy basil.</p>
               <div class="mt-4 flex items-center justify-between">
                 <div class="text-lg font-bold">$13</div>
-                <button class="px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow">Add</button>
+                <button class="add-to-cart px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow" data-id="basil-chicken" data-name="Thai Basil Chicken" data-price="13">Add</button>
               </div>
             </div>
           </article>
@@ -163,7 +198,7 @@
               <p class="text-sm text-gray-600 mt-1">Crispy vegetable rolls with sweet chili dip.</p>
               <div class="mt-4 flex items-center justify-between">
                 <div class="text-lg font-bold">$6</div>
-                <button class="px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow">Add</button>
+                <button class="add-to-cart px-3 py-1 rounded-md text-white bg-gradient-to-r from-btorange to-btyellow" data-id="spring-rolls" data-name="Spring Rolls" data-price="6">Add</button>
               </div>
             </div>
           </article>
@@ -215,5 +250,140 @@
       })
       document.getElementById('year').textContent = new Date().getFullYear()
     </script>
-  </body>
-</html>
++
++    <script>
++      // Cart & Loyalty logic
++      const STORAGE_CART = 'baanthai_cart'
++      const STORAGE_POINTS = 'baanthai_points'
++
++      function loadCart(){
++        try { return JSON.parse(localStorage.getItem(STORAGE_CART)) || {} } catch(e){ return {} }
++      }
++      function saveCart(cart){ localStorage.setItem(STORAGE_CART, JSON.stringify(cart)) }
++
++      function loadPoints(){ return Number(localStorage.getItem(STORAGE_POINTS) || 0) }
++      function savePoints(n){ localStorage.setItem(STORAGE_POINTS, String(n)); renderPoints(); }
++
++      function addToCart(id,name,price){
++        const cart = loadCart()
++        if(!cart[id]) cart[id] = {id,name,price: Number(price),qty:0}
++        cart[id].qty += 1
++        saveCart(cart)
++        renderCart()
++      }
++
++      function removeFromCart(id){ const cart=loadCart(); delete cart[id]; saveCart(cart); renderCart(); }
++      function setQty(id,q){ const cart=loadCart(); if(cart[id]){ cart[id].qty = Math.max(0,Number(q)); if(cart[id].qty===0) delete cart[id]; saveCart(cart); renderCart(); } }
++
++      function cartItemsArray(){ const cart = loadCart(); return Object.values(cart) }
++
++      function calcSubtotal(){ return cartItemsArray().reduce((s,i)=> s + i.price * i.qty, 0) }
++
++      function renderCart(){
++        const itemsEl = document.getElementById('cart-items')
++        itemsEl.innerHTML = ''
++        const items = cartItemsArray()
++        items.forEach(i=>{
++          const div = document.createElement('div')
++          div.className = 'flex items-center gap-3'
++          div.innerHTML = `
++            <div class="w-12 h-12 rounded-md img-placeholder flex items-center justify-center text-white font-semibold">${i.name.split(' ').slice(0,1)}</div>
++            <div class="flex-1">
++              <div class="font-medium">${i.name}</div>
++              <div class="text-sm text-gray-600">$${i.price.toFixed(2)}</div>
++            </div>
++            <div class="flex items-center gap-2">
++              <input type="number" min="0" value="${i.qty}" data-id="${i.id}" class="w-16 px-2 py-1 border rounded text-sm qty-input" />
++              <button data-id="${i.id}" class="text-sm text-red-600 remove-btn">Remove</button>
++            </div>
++          `
++          itemsEl.appendChild(div)
++        })
++
++        const subtotal = calcSubtotal()
++        const tax = subtotal * 0.08
++        let discount = 0
++        const points = loadPoints()
++        const applyPoints = document.getElementById('apply-points')?.checked
++        if(applyPoints){
++          const redeemable = Math.floor(points/100) * 5
++          discount = Math.min(redeemable, subtotal + tax)
++        }
++
++        document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`
++        document.getElementById('cart-tax').textContent = `$${tax.toFixed(2)}`
++        document.getElementById('cart-discount').textContent = `-$${discount.toFixed(2)}`
++        document.getElementById('cart-total').textContent = `$${(subtotal + tax - discount).toFixed(2)}`
++
++        // update header badges
++        const count = items.reduce((s,i)=> s + i.qty, 0)
++        document.getElementById('cart-count').textContent = count
++        document.getElementById('cart-count-mobile').textContent = count
++
++        // attach handlers for qty and remove
++        document.querySelectorAll('.qty-input').forEach(inp=>{
++          inp.addEventListener('change', (e)=> setQty(inp.dataset.id, e.target.value))
++        })
++        document.querySelectorAll('.remove-btn').forEach(b=> b.addEventListener('click', ()=> removeFromCart(b.dataset.id)))
++      }
++
++      function renderPoints(){ document.getElementById('points-balance').textContent = loadPoints() }
++
++      // initialize
++      document.addEventListener('DOMContentLoaded', ()=>{
++        document.querySelectorAll('.add-to-cart').forEach(btn=> btn.addEventListener('click', ()=> addToCart(btn.dataset.id, btn.dataset.name, btn.dataset.price)))
++
++        // cart open/close
++        const sidebar = document.getElementById('cart-sidebar')
++        document.getElementById('open-cart').addEventListener('click', ()=> sidebar.classList.remove('sidebar-hidden'))
++        document.getElementById('open-cart-mobile').addEventListener('click', ()=> sidebar.classList.remove('sidebar-hidden'))
++        document.getElementById('close-cart').addEventListener('click', ()=> sidebar.classList.add('sidebar-hidden'))
++        document.getElementById('apply-points').addEventListener('change', renderCart)
++
++        document.getElementById('checkout-btn').addEventListener('click', async ()=>{
++          const items = cartItemsArray().map(i=>({id:i.id,name:i.name,unit_amount: Math.round(i.price*100),quantity:i.qty}))
++          if(items.length===0){ alert('Your cart is empty'); return }
++          try{
++            const res = await fetch('/create-checkout-session', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({items})})
++            if(res.ok){ const data = await res.json(); if(data.url){ window.location = data.url; return } }
++            throw new Error('no redirect')
++          }catch(e){
++            alert('Checkout redirect not available — performing demo purchase instead')
++            demoPurchase()
++          }
++        })
++
++        document.getElementById('demo-purchase').addEventListener('click', demoPurchase)
++
++        renderPoints()
++        renderCart()
++      })
++
++      function demoPurchase(){
++        const subtotal = calcSubtotal()
++        if(subtotal<=0){ alert('Cart empty'); return }
++        // award 1 point per dollar spent
++        const pointsEarned = Math.floor(subtotal)
++        const prev = loadPoints()
++        let newPoints = prev + pointsEarned
++
++        // if redeeming, subtract points for discount used
++        const apply = document.getElementById('apply-points')?.checked
++        if(apply){
++          const redeemChunks = Math.floor(newPoints/100)
++          const pointsUsed = redeemChunks * 100
++          const discount = redeemChunks * 5
++          newPoints = newPoints - pointsUsed
++          // apply discount in receipt (we simply acknowledge here)
++          alert(`Applied $${discount} discount via points`)
++        }
++
++        savePoints(newPoints)
++        // clear cart
++        localStorage.removeItem(STORAGE_CART)
++        renderCart()
++        alert(`Demo purchase complete — you earned ${pointsEarned} points`)
++      }
++    </script>
+   </body>
+ </html>
